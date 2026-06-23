@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUCIUS ERA | Cyber Nexus</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* ==========================================================================
+           1. ROOT VARIABLES (LUCIUS ERA CYBERPUNK THEME)
+           ========================================================================== */
+        :root {
+            --space-dark: #050508;
+            --metal-core: #0d0f16;
+            --neon-blue: #00d9ff;
+            --neon-purple: #b026ff;
+            --crimson-red: #ff003c;
+            --matrix-green: #00ff66;
+            --glass-bg: rgba(13, 15, 22, 0.6);
+            --glass-border: rgba(0, 217, 255, 0.2);
+            --text-main: #ffffff;
+            --text-muted: #6b7280;
+            --font-tech: 'Courier New', Courier, monospace;
+            --font-display: 'Segoe UI', system-ui, sans-serif;
+            --glow-blue: 0 0 20px rgba(0, 217, 255, 0.5);
+            --glow-purple: 0 0 20px rgba(176, 38, 255, 0.5);
+        }
+
+        /* ==========================================================================
+           2. GLOBAL RESET & BASE STYLES
+           ========================================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--space-dark);
+            color: var(--text-main);
+            font-family: var(--font-display);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Custom Holographic Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--space-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--neon-blue); box-shadow: var(--glow-blue); }
+
+        /* ==========================================================================
+           3. BACKGROUND PARTICLE CANVAS & OVERLAYS
+           ========================================================================== */
+        #particleCanvas {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .cyber-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: 
+                linear-gradient(rgba(176, 38, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 217, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+            pointer-events: none;
+            perspective: 1000px;
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 15px;
+            background: linear-gradient(to bottom, transparent, rgba(0, 217, 255, 0.4), transparent);
+            animation: scan 6s linear infinite;
+            z-index: 999;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        @keyframes scan {
+            0% { top: -20px; }
+            100% { top: 100vh; }
+        }
+
+        /* ==========================================================================
+           4. BOOT SEQUENCE (LOADING SCREEN)
+           ========================================================================== */
+        #bootScreen {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: var(--font-tech);
+            color: var(--matrix-green);
+            transition: opacity 1s ease-out;
+        }
+
+        .boot-text {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px var(--matrix-green);
+        }
+
+        .progress-bar {
+            width: 300px;
+            height: 4px;
+            background: rgba(0, 255, 102, 0.2);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.5);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--matrix-green);
+            box-shadow: 0 0 15px var(--matrix-green);
+            animation: bootLoad 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes bootLoad {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        /* ==========================================================================
+           5. HEADER & NAVIGATION (HUD STYLE)
+           ========================================================================== */
+        header {
+            position: relative;
+            z-index: 100;
+            padding: 30px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--glass-border);
+            background: linear-gradient(180deg, rgba(5, 5, 8, 0.9), transparent);
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-container {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .logo-text {
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: 8px;
+            color: #fff;
+            text-transform: uppercase;
+            position: relative;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+            display: inline-block;
+        }
+
+        /* Glitch Effect on Hover for LUCIUS ERA */
+        .logo-text::before, .logo-text::after {
+            content: "LUCIUS ERA";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+        }
+
+        .logo-container:hover .logo-text::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--crimson-red);
+            animation: glitch-anim-1 0.3s infinite linear alternate-reverse;
+            opacity: 1;
+        }
+
+        .logo-container:hover .logo-text::after {
+            left: -2px;
+            text-shadow: 2px 0 var(--neon-blue);
+            animation: glitch-anim-2 0.3s infinite linear alternate-reverse;
+            opacity: 1;
+        }
+
+        @keyframes glitch-anim-1 { 0% { clip: rect(20px, 9999px, 15px, 0); } 100% { clip: rect(50px, 9999px, 40px, 0); } }
+        @keyframes glitch-anim-2 { 0% { clip: rect(10px, 9999px, 60px, 0); } 100% { clip: rect(30px, 9999px, 80px, 0); } }
+
+        .sys-identity {
+            font-family: var(--font-tech);
+            color: var(--neon-purple);
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            margin-top: 5px;
+            text-shadow: var(--glow-purple);
+        }
+
+        .nav-status {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-family: var(--font-tech);
+        }
+
+        .status-badge {
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            padding: 8px 15px;
+            color: var(--neon-blue);
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            box-shadow: inset 0 0 10px rgba(0, 217, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge i { animation: pulse 2s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; text-shadow: var(--glow-blue); }
+            50% { opacity: 0.4; text-shadow: none; }
+        }
+
+        /* ==========================================================================
+           6. HERO SECTION (SEARCH & FILTER COMMANDS)
+           ========================================================================== */
+        .hero-section {
+            position: relative;
+            z-index: 100;
+            padding: 60px 20px;
+            text-align: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            font-family: var(--font-tech);
+            margin-bottom: 40px;
+            letter-spacing: 3px;
+        }
+
+        .search-console {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--glass-bg);
+            border: 1px solid var(--neon-purple);
+            padding: 20px 30px;
+            border-radius: 50px;
+            color: #fff;
+            font-size: 1.2rem;
+            font-family: var(--font-tech);
+            box-shadow: 0 0 30px rgba(176, 38, 255, 0.15);
+            transition: 0.4s;
+            outline: none;
+        }
+
+        .search-input:focus {
+            box-shadow: var(--glow-purple), inset 0 0 20px rgba(176, 38, 255, 0.2);
+            border-color: #fff;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--neon-purple);
+            font-size: 1.5rem;
+        }
+
+        .category-filters {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: 1px solid var(--text-muted);
+            color: var(--text-muted);
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-family: var(--font-tech);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.4s;
+            text-transform: uppercase;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            border-color: var(--neon-blue);
+            color: var(--neon-blue);
+            background: rgba(0, 217, 255, 0.1);
+            box-shadow: var(--glow-blue);
+        }
+
+        /* ==========================================================================
+           7. MEDIA MATRIX (GRID SYSTEM)
+           ========================================================================== */
+        .matrix-container {
+            position: relative;
+            z-index: 100;
+            padding: 20px 50px 100px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        /* 2050 Holographic Card Design */
+        .media-card {
+            background: var(--metal-core);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            cursor: pointer;
+        }
+
+        .media-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .media-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--neon-purple);
+            box-shadow: 0 15px 40px rgba(176, 38, 255, 0.3), inset 0 0 20px rgba(176, 38, 255, 0.1);
+        }
+
+        .card-preview {
+            width: 100%;
+            height: 220px;
+            position: relative;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .card-preview img, .card-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.5s;
+            opacity: 0.8;
+            filter: grayscale(20%) contrast(120%);
+        }
+
+        .media-card:hover .card-preview img, .media-card:hover .card-preview video {
+            transform: scale(1.1);
+            opacity: 1;
+            filter: grayscale(0%) contrast(100%);
+        }
+
+        .card-type-badge {
+            position: absolute;
+            top: 15px; right: 15px;
+            background: rgba(0,0,0,0.7);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 5px 10px;
+            font-size: 0.7rem;
+            font-family: var(--font-tech);
+            border-radius: 5px;
+            z-index: 3;
+            backdrop-filter: blur(5px);
+            text-shadow: var(--glow-blue);
+        }
+
+        .card-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(176, 38, 255, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: 0.4s;
+            z-index: 3;
+        }
+
+        .media-card:hover .card-overlay { opacity: 1; }
+
+        .play-btn-hologram {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            background: transparent;
+            border: 2px solid #fff;
+            color: #fff;
+            font-size: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(255,255,255,0.5);
+            transition: 0.3s;
+        }
+
+        .play-btn-hologram:hover {
+            background: #fff;
+            color: var(--neon-purple);
+            transform: scale(1.2);
+            box-shadow: 0 0 40px #fff;
+        }
+
+        .card-details {
+            padding: 20px;
+            position: relative;
+            z-index: 3;
+            background: var(--metal-core);
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            letter-spacing: 1px;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-tech);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .download-action {
+            color: var(--neon-blue);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .download-action:hover {
+            color: #fff;
+            text-shadow: var(--glow-blue);
+        }
+
+        /* ==========================================================================
+           8. RESPONSIVE MEDIA QUERIES
+           ========================================================================== */
+        @media (max-width: 768px) {
+            header { padding: 20px; flex-direction: column; gap: 20px; text-align: center; }
+            .logo-text { font-size: 2rem; }
+            .matrix-container { padding: 20px; }
+            .search-input { font-size: 1rem; padding: 15px 20px; }
+            .hero-section { padding: 40px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="bootScreen">
+        <div class="boot-text" id="bootText">INITIATING LUCIUS_OS NEURAL LINK...</div>
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        <div style="margin-top: 20px; font-size: 0.8rem; opacity: 0.5;">CRYONEX DEVELOPER ENCRYPTION ACTIVE</div>
+    </div>
+
+    <canvas id="particleCanvas"></canvas>
+    <div class="cyber-grid"></div>
+    <div class="scanline"></div>
+
+    <header>
+        <div class="logo-container" onclick="playSound('tech')">
+            <h1 class="logo-text">LUCIUS ERA</h1>
+            <div class="sys-identity">ARCHITECT // CRYONEX DEVELOPER</div>
+        </div>
+        <div class="nav-status">
+            <div class="status-badge">
+                <i class="fa-solid fa-earth-americas"></i>
+                GLOBAL MATRIX ONLINE
+            </div>
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <div class="hero-title">ACCESS SECURE MEDIA VAULT</div>
+        
+        <div class="search-console">
+            <input type="text" class="search-input" id="searchInput" placeholder="Enter designation code to search..." onfocus="playSound('tech')">
+            <i class="fa-solid fa-crosshairs search-icon"></i>
+        </div>
+
+        <div class="category-filters">
+            <button class="filter-btn active" onclick="playSound('beep')">All Assets</button>
+            <button class="filter-btn" onclick="playSound('beep')"><i class="fa-solid fa-image"></i> Thumbnails</button>
+            <button class="filter-btn" onclick="playSound('beep')"><i class="fa-solid fa-video"></i> Holograms</button>
+            <button class="filter-btn" onclick="playSound('beep')"><i class="fa-solid fa-music"></i> Audio</button>
+        </div>
+    </section>
+
+    <main class="matrix-container">
+        <div class="media-grid" id="mediaLibrary">
+            
+            <div class="media-card" onmouseenter="playSound('hover')">
+                <div class="card-preview">
+                    <img src="https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?auto=format&fit=crop&q=80&w=800" alt="Thumbnail">
+                    <div class="card-type-badge"><i class="fa-solid fa-image"></i> THUMBNAIL</div>
+                    <div class="card-overlay">
+                        <button class="play-btn-hologram"><i class="fa-solid fa-eye"></i></button>
+                    </div>
+                </div>
+                <div class="card-details">
+                    <h3 class="card-title">PROJECT_RED_EYE_V2</h3>
+                    <div class="card-meta">
+                        <span>SIZE: 2.4 MB</span>
+                        <a href="#" class="download-action"><i class="fa-solid fa-cloud-arrow-down"></i> EXTRACT</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="media-card" onmouseenter="playSound('hover')" style="border-color: rgba(255,0,60,0.3);">
+                <div class="card-preview">
+                    <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800" alt="Video">
+                    <div class="card-type-badge" style="border-color: var(--crimson-red); color: var(--crimson-red);"><i class="fa-solid fa-video"></i> VIDEO</div>
+                    <div class="card-overlay" style="background: rgba(255, 0, 60, 0.4);">
+                        <button class="play-btn-hologram"><i class="fa-solid fa-play"></i></button>
+                    </div>
+                </div>
+                <div class="card-details">
+                    <h3 class="card-title">LUC_3RA_REEL_PROMO</h3>
+                    <div class="card-meta">
+                        <span>SIZE: 15.8 MB</span>
+                        <a href="#" class="download-action" style="color: var(--crimson-red);"><i class="fa-solid fa-cloud-arrow-down"></i> EXTRACT</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // --- 1. BOOT SEQUENCE LOGIC ---
+        window.addEventListener('load', () => {
+            const bootScreen = document.getElementById('bootScreen');
+            const bootText = document.getElementById('bootText');
+            
+            setTimeout(() => { bootText.innerText = "AUTHENTICATING ARCHITECT: CRYONEX DEVELOPER..."; }, 1000);
+            setTimeout(() => { bootText.innerText = "ESTABLISHING CONNECTION TO LUCIUS ERA NEXUS..."; }, 2000);
+            
+            setTimeout(() => {
+                bootScreen.style.opacity = '0';
+                setTimeout(() => { bootScreen.style.display = 'none'; }, 1000);
+                playSound('startup');
+            }, 2600);
+        });
+
+        // --- 2. SYNTHETIC AUDIO ENGINE (No external files needed) ---
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'hover') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'tech' || type === 'beep') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(900, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+            } else if (type === 'startup') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.5);
+                gain.gain.setValueAtTime(0, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 0.2);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
+                osc.start(); osc.stop(audioCtx.currentTime + 1);
+            }
+        }
+
+        // --- 3. HOLOGRAPHIC PARTICLE ENGINE ---
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, particles;
+
+        function initParticles() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < 50; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    r: Math.random() * 2 + 1,
+                    dx: (Math.random() - 0.5) * 0.5,
+                    dy: Math.random() * 2 + 0.5,
+                    color: Math.random() > 0.5 ? '#00d9ff' : '#b026ff'
+                });
+            }
+        }
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = 0.5;
+                ctx.fill();
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = p.color;
+                
+                p.y -= p.dy;
+                p.x += p.dx;
+                if (p.y < 0) { p.y = height; p.x = Math.random() * width; }
+            });
+            requestAnimationFrame(drawParticles);
+        }
+
+        window.addEventListener('resize', initParticles);
+        initParticles();
+        drawParticles();
+    </script>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
