@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+<title>MEDIA VAULT | by LUCIUS DEVELOPER</title>
+<meta name="description" content="MEDIA VAULT — a secure asset library for YouTube thumbnails, audio and video, engineered by LUCIUS DEVELOPER.">
+<link rel="icon" type="image/jpeg" href="https://i.ibb.co/5XxNz2f2/49c17e978c4d.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ============================================================
+       USER AUTH SCREEN — Login / Sign Up
+       Shown until Firebase Auth confirms a logged-in user.
+       ============================================================ -->
+  <div id="authScreen" class="login-screen">
+    <div class="login-card">
+      <img src="https://i.ibb.co/5XxNz2f2/49c17e978c4d.jpg" alt="LUCIUS DEVELOPER" class="login-logo">
+      <h2 class="brand-font">MEDIA VAULT</h2>
+      <p class="login-sub">by LUCIUS DEVELOPER — Sign in to access the vault</p>
+
+      <div class="auth-tabs" role="tablist">
+        <button class="auth-tab active" id="tabLogin" data-target="loginPanel" role="tab" aria-selected="true">Login</button>
+        <button class="auth-tab" id="tabSignup" data-target="signupPanel" role="tab" aria-selected="false">Sign Up</button>
+      </div>
+
+      <!-- ---------- LOGIN PANEL ---------- -->
+      <div class="auth-panel active" id="loginPanel">
+        <form id="loginForm" novalidate>
+          <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" autocomplete="username" required>
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <div class="input-wrap">
+              <input type="password" id="loginPassword" autocomplete="current-password" required>
+              <button type="button" class="toggle-visibility" data-input="loginPassword" aria-label="Show password">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </button>
+            </div>
+          </div>
+          <div class="form-foot-row">
+            <button type="button" class="link-btn" id="forgotPasswordBtn">Forgot password?</button>
+          </div>
+          <p id="loginError" class="form-error hidden"></p>
+          <p id="loginSuccess" class="form-success hidden"></p>
+          <button type="submit" class="btn btn-primary btn-block" id="loginSubmitBtn">
+            <span class="btn-text">Sign In</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- ---------- SIGNUP PANEL ---------- -->
+      <div class="auth-panel" id="signupPanel">
+        <form id="signupForm" novalidate>
+          <div class="form-group">
+            <label for="signupName">Full Name</label>
+            <input type="text" id="signupName" autocomplete="name" required>
+          </div>
+          <div class="form-group">
+            <label for="signupEmail">Email</label>
+            <input type="email" id="signupEmail" autocomplete="username" required>
+          </div>
+          <div class="form-group">
+            <label for="signupPassword">Password</label>
+            <div class="input-wrap">
+              <input type="password" id="signupPassword" autocomplete="new-password" minlength="6" required>
+              <button type="button" class="toggle-visibility" data-input="signupPassword" aria-label="Show password">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </button>
+            </div>
+          </div>
+          <p id="signupError" class="form-error hidden"></p>
+          <button type="submit" class="btn btn-primary btn-block" id="signupSubmitBtn">
+            <span class="btn-text">Create Account</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MAIN APP — hidden until the user is authenticated
+       ============================================================ -->
+  <div id="mainApp" class="hidden">
+
+    <!-- APP DOWNLOAD BANNER -->
+    <div id="appBanner" class="app-banner">
+      <div class="app-banner-content">
+        <img src="https://i.ibb.co/5XxNz2f2/49c17e978c4d.jpg" alt="LUCIUS DEVELOPER" class="app-banner-icon">
+        <span>Download Our Official App for Better Experience</span>
+      </div>
+      <button id="closeBanner" class="banner-close" aria-label="Close banner">&times;</button>
+    </div>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+      <div class="navbar-brand">
+        <img src="https://i.ibb.co/5XxNz2f2/49c17e978c4d.jpg" alt="LUCIUS DEVELOPER logo" class="brand-logo">
+        <div class="brand-text">
+          <span class="brand-name">MEDIA VAULT</span>
+          <span class="brand-tagline">by LUCIUS DEVELOPER</span>
+        </div>
+      </div>
+
+      <div class="navbar-actions">
+        <span id="userEmailChip" class="user-email-chip"></span>
+        <button id="settingsBtn" class="icon-btn" aria-label="Open settings" aria-haspopup="true" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+
+        <div id="settingsMenu" class="settings-menu hidden" role="menu">
+          <div class="settings-block">
+            <div class="settings-title">Appearance — Choose Your Theme</div>
+            <div class="theme-grid" id="themeGrid"></div>
+            <div class="theme-name-label" id="activeThemeLabel"></div>
+          </div>
+          <div class="settings-block">
+            <button class="btn btn-ghost logout-row" id="logoutBtn">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+
+      <section class="hero">
+        <h1>Your Private <span class="text-gradient">YouTube Asset</span> Vault</h1>
+        <p>Browse, preview and download curated thumbnails, audio tracks and video files — all in one secure place.</p>
+      </section>
+
+      <div class="toolbar">
+        <div class="filter-tabs" id="filterTabs" role="tablist">
+          <button class="filter-tab active" data-filter="all" role="tab" aria-selected="true">All</button>
+          <button class="filter-tab" data-filter="Thumbnail" role="tab" aria-selected="false">Thumbnails</button>
+          <button class="filter-tab" data-filter="Audio" role="tab" aria-selected="false">Audio</button>
+          <button class="filter-tab" data-filter="Video" role="tab" aria-selected="false">Video</button>
+        </div>
+        <div class="search-wrap">
+          <input type="text" id="searchInput" class="search-input" placeholder="Search assets by title...">
+        </div>
+      </div>
+
+      <div id="skeletonGrid" class="media-grid"></div>
+      <div id="mediaGrid" class="media-grid hidden"></div>
+
+      <div id="emptyState" class="empty-state hidden">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+        <h3>No assets found</h3>
+        <p id="emptyStateText">There's nothing in the vault that matches your filters yet.</p>
+      </div>
+
+    </main>
+
+    <div id="detailsModal" class="modal-overlay hidden">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="detailsTitle">
+        <button class="modal-close" id="closeDetailsModal" aria-label="Close">&times;</button>
+        <h3 id="detailsTitle" class="brand-font">Asset Details</h3>
+        <div id="detailsContent"></div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <img src="https://i.ibb.co/5XxNz2f2/49c17e978c4d.jpg" alt="LUCIUS DEVELOPER" class="footer-logo">
+      <p>&copy; <span id="footerYear"></span> MEDIA VAULT — Crafted &amp; Engineered by <strong>LUCIUS DEVELOPER</strong></p>
+    </footer>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
